@@ -11,7 +11,7 @@ import android.widget.SeekBar;
 
 public class MainActivity extends AppCompatActivity {
     boolean isFirst=true;
-    long secondRemaining;
+    int secondRemaining;
     CountDownTimer countDownTimer;
     SeekBar seekBar;EditText editText;
     Button button;
@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
             button.setText("Pause");
             if(isFirst){
                 isFirst=false;
-                long time=seekBar.getProgress()*1000;
+                int time=seekBar.getProgress();
                 timer(time);
             }else{
                 timer(secondRemaining);
@@ -40,16 +40,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         activateSeekBar();
-//        timer();
     }
 
-    private void timer(long time) {
-        countDownTimer=new CountDownTimer(time,1000){
+    private void timer(int time) {
+        countDownTimer=new CountDownTimer(time*1000,1000){
             @Override
             public void onTick(long millisUntilFinished) {
-                secondRemaining=millisUntilFinished;
-                long i = millisUntilFinished/1000;
-                editText.setText(Long.toString(i/60) +":"+Long.toString(i%60));
+                int i =secondRemaining= (int)millisUntilFinished/1000;
+                updateEditText(i);
             }
 
             @Override
@@ -58,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 imageView.setImageResource(R.drawable.broken_egg);
                 editText.setVisibility(View.GONE);
                 button.setText("Go!");
-                
+
             }
         }.start();
     }
@@ -69,12 +67,12 @@ public class MainActivity extends AppCompatActivity {
         int max=600;
         seekBar.setMax(max);
         seekBar.setProgress(max-300);
-        editText.setText(Integer.toString(300/60)+":"+300%60);
+        updateEditText(300);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                secondRemaining=progress*1000;
-                editText.setText(Integer.toString(progress/60)+":"+progress%60);
+                secondRemaining=progress;
+                updateEditText(progress);
             }
 
             @Override
@@ -87,5 +85,15 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+    protected void updateEditText(int time){
+        String min,sec;
+        int sec2;
+        min=Integer.toString(time/60); sec2 = time%60;
+        sec=Integer.toString(sec2);
+        if(sec2<=9){
+            sec="0"+sec2;
+        }
+        editText.setText(min+":"+sec);
     }
 }
